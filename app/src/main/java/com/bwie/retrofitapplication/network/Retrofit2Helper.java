@@ -2,6 +2,7 @@ package com.bwie.retrofitapplication.network;
 
 import com.bwie.retrofitapplication.BuildConfig;
 import com.bwie.retrofitapplication.network.api.ClientService;
+import com.bwie.retrofitapplication.network.api.NewGoodsService;
 import com.ihsanbal.logging.Level;
 import com.ihsanbal.logging.LoggingInterceptor;
 
@@ -15,30 +16,32 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * 网络请求帮助类
  * Created by liqy on 2017/9/6.
  */
-public class RetrofitHelper {
+
+public class Retrofit2Helper {
 
     private static OkHttpClient mOkHttpClient;
 
     static {
         initOkHttpClient();
     }
-
     /**
      * 初始化OKHttpClient,设置缓存,设置超时时间,设置打印日志,设置UA拦截器
      */
     private static void initOkHttpClient() {
+        //日志拦截器
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-
+        //获取单例 双重检测
         if (mOkHttpClient == null) {
+
             synchronized (RetrofitHelper.class) {
                 if (mOkHttpClient == null) {
                     //设置Http缓存
-                    mOkHttpClient = new OkHttpClient.Builder()
+                    mOkHttpClient = new OkHttpClient.Builder()//构造者
+                            //插入日志拦截器
                             .addInterceptor(new LoggingInterceptor.Builder()
                                     .loggable(BuildConfig.DEBUG)
                                     .setLevel(Level.BASIC)
@@ -46,14 +49,9 @@ public class RetrofitHelper {
                                     .request("Request")
                                     .response("Response")
                                     .addHeader("version", BuildConfig.VERSION_NAME)
-//              .logger(new Logger() {
-//                  @Override
-//                  public void log(int level, String tag, String msg) {
-//                      Log.w(tag, msg);
-//                  }
-//              })
                                     .build())//日志
-                            .retryOnConnectionFailure(true)//重新连接
+                            //重新连接
+                            .retryOnConnectionFailure(true)
                             .connectTimeout(30, TimeUnit.SECONDS)
                             .writeTimeout(20, TimeUnit.SECONDS)
                             .readTimeout(20, TimeUnit.SECONDS)
@@ -76,8 +74,12 @@ public class RetrofitHelper {
         return retrofit.create(clazz);
     }
 
-    public static ClientService getClientService() {
-        return createApi(ClientService.class, Constants.APP_BASE_URL);
+    public static NewGoodsService getGoodsService(){
+        return createApi(NewGoodsService.class,Constants.APP_BASE_URL);
+    }
+
+    public static ClientService getClientServicee(){
+        return createApi(ClientService.class,Constants.APP_BASE_URL);
     }
 
 
