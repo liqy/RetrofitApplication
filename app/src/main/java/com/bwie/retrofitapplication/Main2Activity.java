@@ -40,10 +40,13 @@ public class Main2Activity extends AppCompatActivity {
         params.goods_ids = list;
 
         Retrofit2Helper.getGoodsService().localGroups(params, "3470667255")
+                //TODO 数据转换
                 .map(new Function<JsonObject, Map<String, LocalGroup>>() {
                     @Override
                     public Map<String, LocalGroup> apply(@NonNull JsonObject jsonObject) throws Exception {
-                        jsonObject.remove("server_time");
+                        jsonObject.remove("server_time");//TODO 移除server_time节点
+
+                        //TODO 注意一下
                         return new Gson().fromJson(jsonObject,
                                 new TypeToken<Map<String, LocalGroup>>() {
                                 }.getType());
