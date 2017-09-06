@@ -2,6 +2,9 @@ package com.bwie.retrofitapplication.network.api;
 
 import com.bwie.retrofitapplication.model.AvatarSubject;
 import com.bwie.retrofitapplication.network.GoodParams;
+import com.google.gson.JsonObject;
+
+import org.json.JSONObject;
 
 import java.util.Map;
 
@@ -21,6 +24,6 @@ public interface NewGoodsService {
     Observable<AvatarSubject> avatarsSubjects(@Query("pdduid") String pdduid);
 
     @POST("goods/local_groups")
-    Observable<Map<String, String>> localGroups(@Body GoodParams params, @Query("pdduid") String pdduid);
+    Observable<JsonObject> localGroups(@Body GoodParams params, @Query("pdduid") String pdduid);
 
 }

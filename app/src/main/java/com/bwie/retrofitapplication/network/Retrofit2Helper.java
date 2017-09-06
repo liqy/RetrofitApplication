@@ -3,12 +3,18 @@ package com.bwie.retrofitapplication.network;
 import com.bwie.retrofitapplication.BuildConfig;
 import com.bwie.retrofitapplication.network.api.ClientService;
 import com.bwie.retrofitapplication.network.api.NewGoodsService;
+import com.bwie.retrofitapplication.network.api.UploadService;
 import com.ihsanbal.logging.Level;
 import com.ihsanbal.logging.LoggingInterceptor;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.internal.platform.Platform;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -61,6 +67,8 @@ public class Retrofit2Helper {
         }
     }
 
+
+
     /**
      * 根据传入的baseUrl，和api创建retrofit
      */
@@ -74,13 +82,32 @@ public class Retrofit2Helper {
         return retrofit.create(clazz);
     }
 
-    public static NewGoodsService getGoodsService(){
+    private static class CacheInterceptor implements Interceptor {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            Response response = chain.proceed(request);
+
+            String str=response.body().string();
+//            Map<String,String>=
+
+//            response.newBuilder().body(replace("=",":"))
+
+
+            return response;
+        }
+    }
+
+        public static NewGoodsService getGoodsService(){
         return createApi(NewGoodsService.class,Constants.APP_BASE_URL);
     }
 
-    public static ClientService getClientServicee(){
+    public static ClientService getClientService(){
         return createApi(ClientService.class,Constants.APP_BASE_URL);
     }
 
+    public static UploadService getUploadService(){
+        return createApi(UploadService.class,Constants.UPLOAD_BASE_URL);
+    }
 
 }

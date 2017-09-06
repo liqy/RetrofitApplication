@@ -5,16 +5,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.bwie.retrofitapplication.model.LocalGroup;
+import com.bwie.retrofitapplication.model.RootData;
 import com.bwie.retrofitapplication.network.GoodParams;
 import com.bwie.retrofitapplication.network.Retrofit2Helper;
+import com.bwie.retrofitapplication.network.UploadParams;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class Main2Activity extends AppCompatActivity {
@@ -23,14 +29,6 @@ public class Main2Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-
-//        Retrofit2Helper.getGoodsService()
-//                .avatarsSubjects("3470667255")
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(avatarSubject -> {
-//
-//                });
 
         GoodParams params = new GoodParams();
         final List<Long> list = new ArrayList<>();
@@ -42,22 +40,33 @@ public class Main2Activity extends AppCompatActivity {
         params.goods_ids = list;
 
         Retrofit2Helper.getGoodsService().localGroups(params, "3470667255")
+                .map(new Function<JsonObject, Map<String, LocalGroup>>() {
+                    @Override
+                    public Map<String, LocalGroup> apply(@NonNull JsonObject jsonObject) throws Exception {
+                        jsonObject.remove("server_time");
+                        return new Gson().fromJson(jsonObject,
+                                new TypeToken<Map<String, LocalGroup>>() {
+                                }.getType());
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Map<String, String>>() {
+                .subscribe(new Consumer<Map<String, LocalGroup>>() {
                     @Override
-                    public void accept(Map<String, String> stringObjectMap) throws Exception {
-
-                        stringObjectMap.remove("server_time");
-
-                        for (Object o : stringObjectMap.values()) {
-                            Log.d(getLocalClassName(),o.toString());
-                            Gson gson=new Gson();
-//                                Log.d(getLocalClassName(),gson.fromJson(o.toString(), LocalGroup.class).toString());
+                    public void accept(Map<String, LocalGroup> retMap) throws Exception {
+                        for (LocalGroup g : retMap.values()) {
+                            Log.d(getLocalClassName(), g.toString());
                         }
-
                     }
                 });
+
+
+        Retrofit2Helper.getUploadService().upload(new UploadParams()).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<RootData>() {
+            @Override
+            public void accept(RootData rootData) throws Exception {
+
+            }
+        });
 
 
     }

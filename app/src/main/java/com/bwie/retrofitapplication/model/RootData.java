@@ -7,6 +7,5 @@ import java.util.Map;
  */
 
 public class RootData {
-    public long server_time;
-//    Map<String,Object>
+    public int code;
 }
